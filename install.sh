@@ -24,24 +24,22 @@ done
 
 quit () {
 	echo "killall busybox || logout" | nc -T localhost 8023 > /dev/null
-	exit $1
 }
+trap quit EXIT
 
 cmd () {
-	OUT=$(echo "$1 && echo; logout" | nc -T localhost 8023 | sed -u '1,/$ /d' | tee /dev/tty | tail -n1)
-	if [ ${#OUT} -gt 1 ]; then
-		quit 1
-	fi
+	OUT=$(echo 'bash -c "'$1'" || echo "An error occurred (exit code $?)"; logout' |
+		nc -T localhost 8023 | sed -u '1,/$ /d' | tee /dev/tty | tail -n1)
+	[[ "$OUT" == "An error occurred"* ]] && exit 1
 }
 
-echo "[*] Checking storage permissions"
+echo "[*] Waiting for storage permissions"
 cmd "until [ -r ~/storage/downloads ]; do sleep .1; done"
 
-echo "[*] Installing mpv"
+echo $'\n[*] Installing mpv'
 cmd "apt -y update && apt -y upgrade && apt -y install mpv && mkdir -p ~/.config/mpv && echo loop-playlist > ~/.config/mpv/mpv.conf"
 
-echo "[*] Installing youtube-dl"
+echo $'\n[*] Installing youtube-dl'
 cmd "apt -y install python && pip --disable-pip-version-check install youtube-dl"
 
-echo "Done"
-quit 0
+echo $'\nDone'
