@@ -28,9 +28,12 @@ quit () {
 trap quit EXIT
 
 cmd () {
-	OUT=$(echo 'bash -c "'$1'" || echo "An error occurred (exit code $?)"; logout' |
-		nc -T localhost 8023 | sed -u '1,/$ /d' | tee /dev/tty | tail -n1)
-	[[ "$OUT" == "An error occurred"* ]] && exit 1
+	[ "$DEBUG" != "1" ] && sed='1,/^$ /d;/^> /d'
+	OUT=$(echo 'bash -c '\'"$1"\'' || echo "An error occurred (exit code $?)"; logout' |
+		nc -T localhost 8023 | sed -u "$sed" | tee /dev/tty | tail -n1)
+	if [[ "$OUT" == "An error occurred"* ]]; then
+		exit 1
+	fi
 }
 
 echo "[*] Waiting for storage permissions"
@@ -42,4 +45,15 @@ cmd "apt -y update && apt -y upgrade && apt -y install mpv && mkdir -p ~/.config
 echo $'\n[*] Installing youtube-dl'
 cmd "apt -y install python && pip --disable-pip-version-check install youtube-dl"
 
-echo $'\nDone'
+echo $'\n[*] Adding shortcuts'
+if ! adb $1 shell pm list packages | grep -q com.termux.widget; then
+	echo "Termux:Widget not installed"
+	exit
+fi
+cmd "mkdir -p ~/.shortcuts"
+for f in ./shortcuts/*; do
+	name="$(basename "$f")"
+	contents="$(cat "$f")"
+	cmd "cat > ~/.shortcuts/\"$name\" "$'<<"EOF"\n'"$contents"$'\nEOF'
+	cmd "chmod +x ~/.shortcuts/\"$name\""
+done

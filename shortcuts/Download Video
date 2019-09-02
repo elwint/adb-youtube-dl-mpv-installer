@@ -1,0 +1,3 @@
+#!/bin/bash
+read -p "URL: " URL
+youtube-dl -o "~/storage/movies/%(title)s.%(ext)s" "$URL"

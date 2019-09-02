@@ -1,0 +1,2 @@
+#!/bin/bash
+apt -y update && apt -y upgrade && pip --disable-pip-version-check install --upgrade youtube-dl

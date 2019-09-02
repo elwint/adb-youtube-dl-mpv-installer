@@ -1,0 +1,3 @@
+#!/bin/bash
+read -p "URL: " URL
+mpv "$URL" --terminal --no-vid
