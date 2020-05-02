@@ -41,8 +41,8 @@ cmd "until [ -r ~/storage/downloads ]; do sleep .1; done"
 
 echo $'\n[*] Installing mpv'
 cmd 'apt -y update && apt -y upgrade && apt -y install mpv && mkdir -p ~/.config/mpv'
-[ "$NO_CONFIG" != "1" ] && cmd 'echo loop-playlist > ~/.config/mpv/mpv.conf &&
-	printf "a seek -5\ns seek -60\nd seek 5\nw seek 60\nS playlist-shuffle\n" > ~/.config/mpv/input.conf'
+[ "$NO_CONFIG" != "1" ] && cmd 'printf "loop-playlist\nterm-playing-msg=\"Title: \${media-title}\"\n" > ~/.config/mpv/mpv.conf &&
+	printf "a seek -5\ns seek -60\nd seek 5\nw seek 60\nS playlist-shuffle\nl show-text \"\${playlist}\"\n" > ~/.config/mpv/input.conf'
 
 echo $'\n[*] Installing youtube-dl'
 cmd "apt -y install python && pip --disable-pip-version-check install youtube-dl"

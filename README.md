@@ -22,4 +22,4 @@ Connect device with ADB. Unlock device, then run:
 
 ### Default mpv configuration
 
-Playlist loop is enabled. Seek with a s d w, shuffle playlist with shift+s.
+Playlist loop is enabled. Seek with a s d w, shuffle playlist with shift+s, show playlist with l.
