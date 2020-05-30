@@ -12,7 +12,7 @@ sleep 5 &&
 echo "[*] Setting up telnet connection" &&
 adb $1 shell input text "termux-setup-storage\ \&\&\ busybox\ telnetd\ -Fb\ 127.0.0.1:8023\;\ exit\ 0" &&
 adb $1 shell input keyevent 66 &&
-adb $1 forward tcp:8023 tcp:8023
+adb $1 forward tcp:8023 tcp:8023 > /dev/null
 
 until [ "$(echo exit | nc -T localhost 8023 | xargs)" ]; do
 	sleep 0.1 && ((i++))
